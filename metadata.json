@@ -1,0 +1,6 @@
+{
+  "name": "Portunol Plus",
+  "description": "Plataforma completa A1-C2 de espanhol para brasileiros com AI Tutor, Conversação AI e monetização Unity Ads.",
+  "requestFramePermissions": ["microphone", "camera"],
+  "majorCapabilities": ["ai_tutor", "gamification", "srs"]
+}

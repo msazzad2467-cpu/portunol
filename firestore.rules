@@ -1,0 +1,72 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Auth check helper
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Owner check helper
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Admin check helper
+    function isAdmin() {
+      let adminEmails = ['m.sazzad2467@gmail.com'];
+      return isSignedIn() && request.auth.token.email in adminEmails;
+    }
+
+    // Global deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User profiles & data
+    match /users/{userId} {
+      allow read: if isSignedIn() && (isOwner(userId) || isAdmin());
+      allow write: if isSignedIn() && isOwner(userId);
+
+      // Subcollections for user
+      match /examResults/{resultId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+      }
+      match /writingHistory/{evalId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId);
+      }
+      match /conversations/{sessionId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId);
+      }
+      match /srsCards/{cardId} {
+        allow read: if isOwner(userId);
+        allow write: if isOwner(userId);
+      }
+    }
+
+    // Admin Secrets (Keys)
+    match /admin/keys {
+      allow read, write: if isAdmin();
+    }
+
+    // Admin Config (Overrides)
+    match /admin/config {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Legacy Settings & Config (for compatibility)
+    match /settings/{docId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Audit Logs
+    match /audit/{userId}/logs/{logId} {
+      allow create: if isSignedIn() && isOwner(userId);
+      allow read: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "AppConfig": {
+      "title": "App Configuration",
+      "description": "Global application settings managed by admins",
+      "type": "object",
+      "properties": {
+        "unityAds": {
+          "type": "object",
+          "properties": {
+            "gameId": { "type": "string" },
+            "bannerPlacement": { "type": "string" },
+            "interstitialPlacement": { "type": "string" },
+            "rewardedPlacement": { "type": "string" }
+          },
+          "required": ["gameId", "bannerPlacement", "interstitialPlacement", "rewardedPlacement"]
+        },
+        "iaCredits": {
+          "type": "object",
+          "properties": {
+            "rewardAmount": { "type": "number" },
+            "initialAmount": { "type": "number" },
+            "skipModuleCost": { "type": "number" },
+            "skipLessonCost": { "type": "number" }
+          },
+          "required": ["rewardAmount", "initialAmount", "skipModuleCost", "skipLessonCost"]
+        },
+        "adminEmails": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["unityAds", "iaCredits", "adminEmails"]
+    },
+    "UserProgress": {
+      "title": "User Progress",
+      "description": "Detailed learning progress and stats for a user",
+      "type": "object",
+      "properties": {
+        "profile": { "type": "object" },
+        "stats": { "type": "object" },
+        "xp": { "type": "number" },
+        "streak": { "type": "number" },
+        "rewards": { "type": "object" }
+      }
+    }
+  },
+  "firestore": {
+    "settings/global": {
+      "schema": "AppConfig",
+      "description": "Singleton document containing global app configuration"
+    },
+    "users/{userId}": {
+      "schema": "UserProgress",
+      "description": "User-specific progress and settings"
+    }
+  }
+}
